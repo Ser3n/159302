@@ -16,6 +16,14 @@ struct Compare
         return lhs->getFCost() > rhs->getFCost();
     }
 };
+
+struct CompareUC
+{
+    bool operator()(const Puzzle *lhs, const Puzzle *rhs) const
+    {
+        return lhs->getPathLength() > rhs->getPathLength();
+    }
+};
 // Function to check if the puzzle is solvable
 bool is_solvable(Puzzle *puzzle)
 {
@@ -61,7 +69,7 @@ string uc_explist(string const initialState, string const goalState, int &pathLe
     cout << "------------------------------" << endl;
 
     // Priority queue to store nodes, sorted by path cost
-    priority_queue<Puzzle *, vector<Puzzle *>, Compare> openList;
+    priority_queue<Puzzle *, vector<Puzzle *>, CompareUC> openList;
 
     // Unordered set to store closed nodes (nodes that have been expanded)
     unordered_set<string> closedList;
@@ -99,6 +107,7 @@ string uc_explist(string const initialState, string const goalState, int &pathLe
         if (currentPuzzle->goalMatch())
         {
             path = currentPuzzle->getPath();
+            cout << "Path: " << path << endl;
             pathLength = currentPuzzle->getPathLength();
             delete currentPuzzle;
             break;
