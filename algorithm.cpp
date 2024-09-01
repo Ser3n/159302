@@ -11,9 +11,9 @@ using namespace std;
 
 struct Compare
 {
-    bool operator()(Puzzle *lhs, Puzzle *rhs)
+    bool operator()(const Puzzle *lhs, const Puzzle *rhs) const
     {
-        return lhs->getPathLength() > rhs->getPathLength();
+        return lhs->getFCost() > rhs->getFCost();
     }
 };
 // Function to check if the puzzle is solvable
@@ -144,26 +144,93 @@ string uc_explist(string const initialState, string const goalState, int &pathLe
 string aStar_ExpandedList(string const initialState, string const goalState, int &pathLength, int &numOfStateExpansions, int &maxQLength,
                           float &actualRunningTime, int &numOfDeletionsFromMiddleOfHeap, int &numOfLocalLoopsAvoided, int &numOfAttemptedNodeReExpansions, heuristicFunction heuristic)
 {
+    // Initialize the path string and start time
+    string path = "";
+    clock_t startTime = clock();
 
-    string path;
-    clock_t startTime;
-
+    // Initialize counters
+    numOfStateExpansions = 0;
+    maxQLength = 0;
     numOfDeletionsFromMiddleOfHeap = 0;
     numOfLocalLoopsAvoided = 0;
     numOfAttemptedNodeReExpansions = 0;
 
-    // cout << "------------------------------" << endl;
-    // cout << "<<aStar_ExpandedList>>" << endl;
-    // cout << "------------------------------" << endl;
-    actualRunningTime = 0.0;
-    startTime = clock();
-    srand(time(NULL));                   // RANDOM NUMBER GENERATOR - ONLY FOR THIS DEMO.  YOU REALLY DON'T NEED THIS! DISABLE THIS STATEMENT.
-    maxQLength = rand() % 200;           // AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY.
-    numOfStateExpansions = rand() % 200; // AT THE MOMENT, THIS IS JUST GENERATING SOME DUMMY VALUE.  YOUR ALGORITHM IMPLEMENTATION SHOULD COMPUTE THIS PROPERLY
+    // Print header for output
+    cout << "------------------------------" << endl;
+    cout << "<<aStar_ExpandedList>>" << endl;
+    cout << "------------------------------" << endl;
 
-    //***********************************************************************************************************
+    // Create priority queue (open list) and closed list
+    priority_queue<Puzzle *, vector<Puzzle *>, Compare> openList;
+    unordered_set<string> closedList;
+
+    // Create initial puzzle and add to open list
+    Puzzle *initialPuzzle = new Puzzle(initialState, goalState);
+    openList.push(initialPuzzle);
+
+    while (!openList.empty())
+    {
+        // Get the puzzle with the lowest f-cost
+        Puzzle *currentPuzzle = openList.top();
+        openList.pop();
+
+        // Check if we've reached the goal state
+        if (currentPuzzle->goalMatch())
+        {
+            path = currentPuzzle->getPath();
+            pathLength = currentPuzzle->getPathLength();
+            actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
+            delete currentPuzzle;
+            return path;
+        }
+
+        // Check if the current state has already been expanded
+        if (closedList.find(currentPuzzle->toString()) != closedList.end())
+        {
+            numOfAttemptedNodeReExpansions++;
+            delete currentPuzzle;
+            continue;
+        }
+
+        // Expand the current state
+        numOfStateExpansions++;
+        closedList.insert(currentPuzzle->toString());
+
+        // Generate successors
+        vector<Puzzle *> successors;
+        if (currentPuzzle->canMoveUp())
+            successors.push_back(currentPuzzle->moveUp());
+        if (currentPuzzle->canMoveRight())
+            successors.push_back(currentPuzzle->moveRight());
+        if (currentPuzzle->canMoveDown())
+            successors.push_back(currentPuzzle->moveDown());
+        if (currentPuzzle->canMoveLeft())
+            successors.push_back(currentPuzzle->moveLeft());
+
+        // Process successors
+        for (Puzzle *successor : successors)
+        {
+            if (closedList.find(successor->toString()) == closedList.end())
+            {
+                // Update heuristic cost and f-cost
+                successor->updateHCost(heuristic);
+                successor->updateFCost();
+                openList.push(successor);
+            }
+            else
+            {
+                numOfLocalLoopsAvoided++;
+                delete successor;
+            }
+        }
+
+        // Update maximum queue length
+        maxQLength = max(maxQLength, (int)openList.size());
+
+        delete currentPuzzle;
+    }
+
+    // If we've exhausted the open list without finding a solution
     actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
-    path = "DDRRLLLUUURDLUDURDLUU"; // this is just a dummy path for testing the function
-    pathLength = path.size();
-    return path;
+    return "";
 }
