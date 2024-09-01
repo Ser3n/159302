@@ -42,6 +42,8 @@ string uc_explist(string const initialState, string const goalState, int& pathLe
     clock_t startTime = clock();
 
     // Initialize counters for statistics
+    numOfStateExpansions = 0;
+    maxQLength = 0;
     numOfDeletionsFromMiddleOfHeap = 0;
     numOfLocalLoopsAvoided = 0;
     numOfAttemptedNodeReExpansions = 0;
@@ -68,6 +70,10 @@ string uc_explist(string const initialState, string const goalState, int& pathLe
         Puzzle* currentPuzzle = openList.top();
         openList.pop();
 
+   if (currentPuzzle == nullptr) {
+        cout << "currentPuzzle is null" << endl;
+        continue;  // Skip this iteration if currentPuzzle is null
+    }
         // If the node has already been expanded, skip it to avoid local loops
         if (closedList.find(currentPuzzle->toString()) != closedList.end()) {
             numOfLocalLoopsAvoided++;
@@ -105,7 +111,11 @@ string uc_explist(string const initialState, string const goalState, int& pathLe
     // Calculate the actual running time of the search algorithm
     actualRunningTime = ((float)(clock() - startTime) / CLOCKS_PER_SEC);
 
-    // Return the path to the goal node
+        if (path.empty()) {
+        cout << "No solution found." << endl;
+    }
+
+
     return path;
 }
 

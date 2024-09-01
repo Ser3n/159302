@@ -589,6 +589,7 @@ void run_astar_misplaced_tiles_experiments() {
 int main( int argc, char* argv[] ){
    
    string path;
+   cout << "Debug: Entering main function" << endl;
   
 
 	if(argc < 3){
@@ -652,6 +653,7 @@ try{
         cout << endl << "============================================<< EXPERIMENT RESULTS >>============================================" << endl;
 
         if (algorithmSelected == "uc_explist") {
+            cout << "Debug: About to call uc_explist" << endl;
             cout << setw(31) << std::left << "1) uc_explist";
 
 
@@ -666,6 +668,7 @@ try{
         //---
 
         if (algorithmSelected == "uc_explist") {
+            cout << "Debug: About to call uc_explist" << endl;
 
             path = uc_explist(initialState, goalState, pathLength, numOfStateExpansions, maxQLength, actualRunningTime, numOfDeletionsFromMiddleOfHeap, numOfLocalLoopsAvoided, numOfAttemptedNodeReExpansions);
 

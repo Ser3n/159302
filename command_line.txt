@@ -6,9 +6,31 @@ search  single_run astar_explist_manhattan 608435127 123456780
 search  "animate_run" astar_explist_manhattan "608435127" "123456780"
 search "batch_run" astar_explist_manhattan 
 search "batch_run" astar_explist_misplacedtiles 
-search "batch_run" uc_explist
+./search "batch_run" uc_explist
 
 //U
-search "single_run" uc_explist "123456780" "123546780"
-search "single_run" uc_explist "123456780" "876543210"
-search "animate_run" uc_explist "608435127" "123456780"
+./search "single_run" uc_explist "123456780" "123546780"
+./search "single_run" uc_explist "123456780" "123456780"
+./search "animate_run" uc_explist "608435127" "123456780"
+
+
+SAMPLES U_C_S_
+./search "single_run" uc_explist "123048765" "123456780"
+./search "single_run" uc_explist "346208175" "123546780"
+./search "single_run" uc_explist "143708652" "123546780"
+./search "single_run" uc_explist "743286051" "123546780"
+./search "single_run" uc_explist "185024367" "123546780"
+
+A*_explist_manhattan
+./search "single_run" astar_explist_manhattan "123048765" "123546780"
+./search "single_run" astar_explist_manhattan "346208175" "123456780"
+./search "single_run" astar_explist_manhattan "143708652" "123456780"  
+./search "single_run" astar_explist_manhattan "743286051" "123546780"
+./search "single_run" astar_explist_manhattan "185024367" "123456780"
+
+A*_explist_misplacedtiles
+./search "single_run" astar_explist_misplacedtiles "123048765" "123546780"
+./search "single_run" astar_explist_misplacedtiles "346208175" "123456780"
+./search "single_run" astar_explist_misplacedtiles "143708652" "123456780"  
+./search "single_run" astar_explist_misplacedtiles "743286051" "123546780"
+./search "single_run" astar_explist_misplacedtiles "185024367" "123456780"

@@ -30,6 +30,8 @@ public:
 
     Puzzle(const Puzzle &p); //Constructor
     Puzzle(string const elements, string const goal);
+
+    string getGoalState() const;
      
     void printBoard();
     
