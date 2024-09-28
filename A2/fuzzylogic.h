@@ -28,14 +28,15 @@ typedef enum {regular_trapezoid, left_trapezoid, right_trapezoid} trapz_type;
 
 //Input parameters
 // enum {INPUT_X, INPUT_Y};
-// enum {in_theta,in_theta_dot,in_x,in_x_dot};
+
 enum {INPUT_X};//Simplified to one input
+enum {in_theta,in_theta_dot,in_x,in_x_dot};
 
 //Fuzzy sets
-enum {in_nvl,in_nvm, in_nl,in_nm,in_ns,in_ze,in_ps,in_pm, in_pl, in_pvl};
+enum {in_nvl,in_nvm, in_nl,in_nm,in_ns, in_nvs, in_ze,in_ps,in_pm, in_pl, in_pvl, in_pvm, in_pvs};
 
 //Fuzzy output terms
-enum {out_nvl,out_nl,out_nm, out_ns, out_ze,out_ps, out_pm,out_pl, out_pvl};
+enum {out_nvl,out_nl,out_nm, out_ns,out_nvm,out_nvs, out_ze,out_ps, out_pm,out_pl, out_pvl, out_pvm, out_pvs};
 
 
 typedef struct {
