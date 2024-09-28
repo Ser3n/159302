@@ -32,7 +32,7 @@ typedef enum {regular_trapezoid, left_trapezoid, right_trapezoid} trapz_type;
 enum {INPUT_X};//Simplified to one input
 
 //Fuzzy sets
-enum {in_nvl,in_nl,in_nm,in_ns,in_ze,in_ps,in_pm, in_pl, in_pvl};
+enum {in_nvl,in_nvm, in_nl,in_nm,in_ns,in_ze,in_ps,in_pm, in_pl, in_pvl};
 
 //Fuzzy output terms
 enum {out_nvl,out_nl,out_nm, out_ns, out_ze,out_ps, out_pm,out_pl, out_pvl};
