@@ -554,7 +554,7 @@ void runInvertedPendulum(){
 	}
 		
     //2) Enable this only after your fuzzy system has been completed already.
-	//free_fuzzy_rules(&g_fuzzy_system);
+	free_fuzzy_rules(&g_fuzzy_system);
 }
 
 

@@ -30,13 +30,13 @@ void initFuzzyRules(fuzzy_system_rec *fl) {
     //The vectors define the output for each rule
 
         std::vector<int> famm_theta = {
-        out_nvl, out_nl, out_ns, out_ns, out_ze, out_nl,out_nl, out_ns, out_ze, out_ps, 
+        out_nvl, out_nvl, out_ns, out_ns, out_ze, out_nl,out_nl, out_ns, out_ze, out_ps, 
         out_ze, out_ns, out_nl,out_ps, out_pl, out_pl, out_ns, out_ze, out_ps, out_pvl,
         out_pvl, out_ze, out_pvl, out_pl, out_pl
     };   
 
   std::vector<int> famm_x = {
-        out_pvl, out_pl, out_ps, out_ps, out_ze, out_pl, out_pl, out_ps, out_ze, out_ns,
+        out_pvl, out_pvl, out_ps, out_ps, out_ze, out_pl, out_pl, out_ps, out_ze, out_ns,
         out_ze, out_ps, out_pl, out_ns, out_nl, out_nl, out_ps, out_ze, out_ns, out_nvl, 
         out_nvl, out_ze, out_nvl, out_nl, out_nl
 
@@ -55,7 +55,7 @@ void initFuzzyRules(fuzzy_system_rec *fl) {
     
 
    
-    // Theta rules //Started with 26 but will need to expand to improve the system
+    // Theta rules //Started with 26 but expanded to 50 to improve the system
     //Rules covering NL
     fl->rules[0].inp_fuzzy_set[0] = in_nl; fl->rules[0].inp_fuzzy_set[1] = in_nl; //If theta is NL and theta_dot is NL, then output is NVL
     fl->rules[1].inp_fuzzy_set[0] = in_nl; fl->rules[1].inp_fuzzy_set[1] = in_ns; //If theta is NL and theta_dot is NS, then output is NL
@@ -140,11 +140,11 @@ void initMembershipFunctions(fuzzy_system_rec *fl)
    
     // For each input variable (x, x_dot, theta, theta_dot)
    for (int var = 0; var < 4; var++) {
-        fl->inp_mem_fns[var][in_nl] = init_trapz(-4, -4, 3, 2, left_trapezoid);
-        fl->inp_mem_fns[var][in_ns] = init_trapz(-1.5, -1, -1, -0.5, regular_trapezoid);
-        fl->inp_mem_fns[var][in_ze] = init_trapz(-0.75, -0.25, 0.25, 0.75, regular_trapezoid);
-        fl->inp_mem_fns[var][in_ps] = init_trapz(0.5, 1, 1, 1.5, regular_trapezoid);
-        fl->inp_mem_fns[var][in_pl] = init_trapz(2, 3, 4, 4, right_trapezoid);
+        fl->inp_mem_fns[var][in_nl] = init_trapz(-2, -1, 0, 0, left_trapezoid);
+        fl->inp_mem_fns[var][in_ns] = init_trapz(-1.5, -1, -.6, -0.1, regular_trapezoid);
+        fl->inp_mem_fns[var][in_ze] = init_trapz(-0.6, -.1, .1, 0.6, regular_trapezoid);
+        fl->inp_mem_fns[var][in_ps] = init_trapz(.1, .6, 1, 1.5, regular_trapezoid);
+        fl->inp_mem_fns[var][in_pl] = init_trapz(0, 0, 1, 2, right_trapezoid);
     }
    
 
@@ -160,10 +160,10 @@ void initFuzzySystem (fuzzy_system_rec *fl) {
    fl->no_of_inp_regions = 5; //Number of input fuzzy sets
    fl->no_of_outputs = 9; //Number of output sets
 	
-   coefficient_A=1.0; //Angle coefficient
-   coefficient_B=1.0; //Angular Velocit coefficient
-   coefficient_C=1.0;
-   coefficient_D=1.0;
+   coefficient_A=.2; //Angle coefficient
+   coefficient_B=.4; //Angular Velocit coefficient
+   coefficient_C=.1;
+   coefficient_D=.3;
 	
 	//Sample only
 	// fl->output_values [out_nvl]=-95.0;
@@ -171,7 +171,7 @@ void initFuzzySystem (fuzzy_system_rec *fl) {
    
    //Define the crisp output values for each set
 
-   fl->output_values [out_nvl] = -1000; //Negative Very Large
+   fl->output_values [out_nvl] = -1200; //Negative Very Large
    fl->output_values [out_nl] = -500; //Negative Large
    fl->output_values [out_nm] = -125; //Negative Medium
    fl->output_values [out_ns] = -25; //Negative Small
@@ -179,7 +179,7 @@ void initFuzzySystem (fuzzy_system_rec *fl) {
    fl->output_values [out_ps] = 25; //Positive Small
    fl->output_values [out_pm] = 125; //Positive Medium
    fl->output_values [out_pl] = 500; //Positive Large
-   fl->output_values [out_pvl] = 1000; //Positive Very Large
+   fl->output_values [out_pvl] = 1200; //Positive Very Large
 
 //Memory alloc for the rules
    fl->rules = (rule *) malloc ((size_t)(fl->no_of_rules*sizeof(rule)));
@@ -289,8 +289,8 @@ float fuzzy_system (float inputs[],fuzzy_system_rec fz) {
 	   m_values[j] = trapz(inputs[variable_index],
 	       fz.inp_mem_fns[variable_index][fuzzy_set]);
 
-          // Debug print
-            cout << "Rule " << i << ", Input " << j << ": " << m_values[j] << endl;
+         //  // Debug print
+         //    cout << "Rule " << i << ", Input " << j << ": " << m_values[j] << endl;
 
 	   } /* end j  */
       
@@ -300,8 +300,8 @@ float fuzzy_system (float inputs[],fuzzy_system_rec fz) {
        sum1 += weight * fz.output_values[fz.rules[i].out_fuzzy_set];
        sum2 += weight;
 
-        // Debug print
-        cout << "Rule " << i << " weight: " << weight << endl;
+      //   // Debug print
+      //   cout << "Rule " << i << " weight: " << weight << endl;
    } /* end i  */
  
 	
