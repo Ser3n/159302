@@ -8,99 +8,146 @@
 void initFuzzyRules(fuzzy_system_rec *fl) {
 	
    const int
-      // no_of_x_rules = 25,
-      // no_of_theta_rules = 25;
-      no_of_rules = 13;
+       no_of_x_rules = 25,
+       no_of_theta_rules = 25;
+       //no_of_rules = no_of_theta_rules + no_of_x_rules;
    
    int i;
 	
-//---------------------------------------------------------------------------- 	
-//Combined input X(Theta and Theta_dot)
-//   
-   for (i = 0;i < no_of_rules;i++) {
-       // fl->rules[i].inp_index[0] = in_theta;
-      //  fl->rules[i].inp_index[1] = in_theta_dot;
-      fl->rules[i].inp_index[0] = in_x;
-   }
+ // Theta rules (pendulum angle)
+    for (i = 0; i < no_of_theta_rules; i++) {
+        fl->rules[i].inp_index[0] = in_theta; //Pendulum angle
+        fl->rules[i].inp_index[1] = in_theta_dot; //Angular Velocity
+    }
       
-   /* Regions for theta and theta_dot: */
-   //sample only
-   // fl->rules[0].inp_fuzzy_set[0] = in_nl;
-   // fl->rules[0].inp_fuzzy_set[1] = in_nl;
+    // X rules (cart position)
+    for (i = 0; i < no_of_x_rules; i++) {
+        fl->rules[i + no_of_theta_rules].inp_index[0] = in_x; //Position
+        fl->rules[i + no_of_theta_rules].inp_index[1] = in_x_dot; //Velocity
+    }
+
+    //Define output fuzzy sets based on Yamakawa's approach
+    //The vectors define the output for each rule
+
+        std::vector<int> famm_theta = {
+        out_nvl, out_nl, out_ns, out_ns, out_ze, out_nl,out_nl, out_ns, out_ze, out_ps, 
+        out_ze, out_ns, out_nl,out_ps, out_pl, out_pl, out_ns, out_ze, out_ps, out_pvl,
+        out_pvl, out_ze, out_pvl, out_pl, out_pl
+    };   
+
+  std::vector<int> famm_x = {
+        out_pvl, out_pl, out_ps, out_ps, out_ze, out_pl, out_pl, out_ps, out_ze, out_ns,
+        out_ze, out_ps, out_pl, out_ns, out_nl, out_nl, out_ps, out_ze, out_ns, out_nvl, 
+        out_nvl, out_ze, out_nvl, out_nl, out_nl
+
+    };
+
+    
+
+    // Assign output fuzzy sets
+    for (i = 0; i < no_of_theta_rules; i++) {
+        fl->rules[i].out_fuzzy_set = famm_theta[i];
+    }
+    for (i = 0; i < no_of_x_rules; i++) {
+        fl->rules[i + no_of_theta_rules].out_fuzzy_set = famm_x[i];
+    }
+
+    
+
    
-	
-	
-//----------------------------------------------------------------------------   
-//X vs. X_DOT
-//
-   // for (i = 0;i < no_of_x_rules;i++) {
-   // 	  fl->rules[i + no_of_theta_rules].inp_index[0] = in_x;
-   // 	  fl->rules[i + no_of_theta_rules].inp_index[1] = in_x_dot;
-	// }
-	  
-	/* Regions for x and x_dot: */
-   //sample only
-   // fl->rules[25+0].inp_fuzzy_set[0] = in_nl;
-   // fl->rules[25+0].inp_fuzzy_set[1] = in_nl;
-   
-   //and so on, and so forth...
+    // Theta rules //Started with 26 but will need to expand to improve the system
+    //Rules covering NL
+    fl->rules[0].inp_fuzzy_set[0] = in_nl; fl->rules[0].inp_fuzzy_set[1] = in_nl; //If theta is NL and theta_dot is NL, then output is NVL
+    fl->rules[1].inp_fuzzy_set[0] = in_nl; fl->rules[1].inp_fuzzy_set[1] = in_ns; //If theta is NL and theta_dot is NS, then output is NL
+    fl->rules[2].inp_fuzzy_set[0] = in_nl; fl->rules[2].inp_fuzzy_set[1] = in_ze;//If theta is NL and theta_dot is ZE, then output is NS
+    fl->rules[3].inp_fuzzy_set[0] = in_nl; fl->rules[3].inp_fuzzy_set[1] = in_ps; //If theta is NL and theta_dot is PS, then output is NS
+    fl->rules[4].inp_fuzzy_set[0] = in_nl; fl->rules[4].inp_fuzzy_set[1] = in_pl; //If theta is NL and theta_dot is PL, then output is ZE
+    
+    //Rules covering ns
+    fl->rules[5].inp_fuzzy_set[0] = in_ns; fl->rules[5].inp_fuzzy_set[1] = in_ns; //If theta is NS and theta_dot is NS, then output is NL
+    fl->rules[6].inp_fuzzy_set[0] = in_ns; fl->rules[6].inp_fuzzy_set[1] = in_nl; //If theta is NS and theta_dot is NL, then output is NL
+    fl->rules[7].inp_fuzzy_set[0] = in_ns; fl->rules[7].inp_fuzzy_set[1] = in_ze; //If theta is NS and theta_dot is NS, then output is NS
+    fl->rules[8].inp_fuzzy_set[0] = in_ns; fl->rules[8].inp_fuzzy_set[1] = in_ps; //If theta is NS and theta_dot is ZE, then output is ZE
+    fl->rules[9].inp_fuzzy_set[0] = in_ns; fl->rules[9].inp_fuzzy_set[1] = in_pl; //If theta is NS and theta_dot is ZE, then output is PS
 
-   // fl->rules[25+24].out_fuzzy_set = out_nl;
+    //Rules covering ZE
+    fl->rules[10].inp_fuzzy_set[0] = in_ze; fl->rules[10].inp_fuzzy_set[1] = in_ze; //If theta is ZE and theta_dot is ZE, then output is ZE
+    fl->rules[11].inp_fuzzy_set[0] = in_ze; fl->rules[11].inp_fuzzy_set[1] = in_nl; //If theta is ZE and theta_dot is NS, then output is NS
+    fl->rules[12].inp_fuzzy_set[0] = in_ze; fl->rules[12].inp_fuzzy_set[1] = in_ns; //If theta is ZE and theta_dot is NL, then output is NL
+    fl->rules[13].inp_fuzzy_set[0] = in_ze; fl->rules[13].inp_fuzzy_set[1] = in_ps; //If theta is ZE and theta_dot is PS, then output is PS
+    fl->rules[14].inp_fuzzy_set[0] = in_ze; fl->rules[14].inp_fuzzy_set[1] = in_pl; //If theta is ZE and theta_dot is PL, then output is PL
 
-   //Define rules based on Yamakawa
-   //Each rule maps an input fuzzy set to an output fuzzy set
+    //Rules covering PS
+    fl->rules[15].inp_fuzzy_set[0] = in_ps; fl->rules[15].inp_fuzzy_set[1] = in_ps; //If theta is PS and theta_dot is PS, then output is PL
+    fl->rules[16].inp_fuzzy_set[0] = in_ps; fl->rules[16].inp_fuzzy_set[1] = in_nl; //If theta is PS and theta_dot is NL, then output is NS
+    fl->rules[17].inp_fuzzy_set[0] = in_ps; fl->rules[17].inp_fuzzy_set[1] = in_ns; //If theta is PS and theta_dot is NS, then output is ZE
+    fl->rules[18].inp_fuzzy_set[0] = in_ps; fl->rules[18].inp_fuzzy_set[1] = in_ze; //If theta is PS and theta_dot is ZE, then output is PS
+    fl->rules[19].inp_fuzzy_set[0] = in_ps; fl->rules[19].inp_fuzzy_set[1] = in_pl; //If theta is PS and theta_dot is PL, then output is PVL
 
-    fl->rules[0].inp_fuzzy_set[0] = in_nvl; fl->rules[0].out_fuzzy_set = out_pvl;//if X is Negatively Very Large, then force is Positively Very Large
-    fl->rules[1].inp_fuzzy_set[0] = in_nl;  fl->rules[1].out_fuzzy_set = out_pl; //If X is Negatively large the the force is positively large
-    fl->rules[2].inp_fuzzy_set[0] = in_nm;  fl->rules[2].out_fuzzy_set = out_pm;//if X is Negatively medium, then force is positively medium
-    fl->rules[3].inp_fuzzy_set[0] = in_ns;  fl->rules[3].out_fuzzy_set = out_ps;//If X is negatively small then the force is positively small
-    fl->rules[4].inp_fuzzy_set[0] = in_ze;  fl->rules[4].out_fuzzy_set = out_ze;//If x is 0 then force is 0
-    fl->rules[5].inp_fuzzy_set[0] = in_ps;  fl->rules[5].out_fuzzy_set = out_ns;//if x is positively small then force is negatively small
-    fl->rules[6].inp_fuzzy_set[0] = in_pm;  fl->rules[6].out_fuzzy_set = out_nm;// if x is positively medium then force is negatively medium
-    fl->rules[7].inp_fuzzy_set[0] = in_pl;  fl->rules[7].out_fuzzy_set = out_nl;//if X is positively large then force is negatively large
-    fl->rules[8].inp_fuzzy_set[0] = in_pvl; fl->rules[8].out_fuzzy_set = out_nvl;//if X is positively very large than the force is negatively very large
-    fl->rules[9].inp_fuzzy_set[0] = in_nvm; fl->rules[9].out_fuzzy_set = out_pvm;//if X is negatively very medium then force is positively very medium
-    fl->rules[10].inp_fuzzy_set[0] = in_pvm; fl->rules[10].out_fuzzy_set = out_nvm;//if X is positively very medium then force is negatively very medium
-    fl->rules[11].inp_fuzzy_set[0] = in_nvs; fl->rules[11].out_fuzzy_set = out_pvs;// if X is negtively very small then force is positively very small
-    fl->rules[12].inp_fuzzy_set[0] = in_pvs; fl->rules[12].out_fuzzy_set = out_nvs;// if X is positively ver small then force is negatively very small
+    //Rules covering PL
+    fl->rules[20].inp_fuzzy_set[0] = in_pl; fl->rules[20].inp_fuzzy_set[1] = in_pl; //If theta is PL and theta_dot is PL, then output is PVL
+    fl->rules[21].inp_fuzzy_set[0] = in_pl; fl->rules[21].inp_fuzzy_set[1] = in_nl; //If theta is PL and theta_dot is NL, then output is ZE
+    fl->rules[22].inp_fuzzy_set[0] = in_pl; fl->rules[22].inp_fuzzy_set[1] = in_ns; //If theta is PL and theta_dot is NS, then output is PVL
+    fl->rules[23].inp_fuzzy_set[0] = in_pl; fl->rules[23].inp_fuzzy_set[1] = in_ze; //If theta is PL and theta_dot is NL, then output is PL
+    fl->rules[24].inp_fuzzy_set[0] = in_pl; fl->rules[24].inp_fuzzy_set[1] = in_ps; //If theta is PL and theta_dot is ZE, then output is PL
+
+    // X rules
+      //Rules covering NL
+    fl->rules[25].inp_fuzzy_set[0] = in_nl; fl->rules[25].inp_fuzzy_set[1] = in_nl; //If theta is NL and theta_dot is NL, then output is PVL
+    fl->rules[26].inp_fuzzy_set[0] = in_nl; fl->rules[26].inp_fuzzy_set[1] = in_ns; //If theta is NL and theta_dot is NS, then output is PL
+    fl->rules[27].inp_fuzzy_set[0] = in_nl; fl->rules[27].inp_fuzzy_set[1] = in_ze;//If theta is NL and theta_dot is ZE, then output is PS
+    fl->rules[28].inp_fuzzy_set[0] = in_nl; fl->rules[28].inp_fuzzy_set[1] = in_ps; //If theta is NL and theta_dot is PS, then output is PS
+    fl->rules[29].inp_fuzzy_set[0] = in_nl; fl->rules[29].inp_fuzzy_set[1] = in_pl; //If theta is NL and theta_dot is PL, then output is ZE
+    
+    //Rules covering ns
+    fl->rules[30].inp_fuzzy_set[0] = in_ns; fl->rules[30].inp_fuzzy_set[1] = in_ns; //If theta is NS and theta_dot is NS, then output is PL
+    fl->rules[31].inp_fuzzy_set[0] = in_ns; fl->rules[31].inp_fuzzy_set[1] = in_nl; //If theta is NS and theta_dot is NL, then output is PL
+    fl->rules[32].inp_fuzzy_set[0] = in_ns; fl->rules[32].inp_fuzzy_set[1] = in_ze; //If theta is NS and theta_dot is NS, then output is PS
+    fl->rules[33].inp_fuzzy_set[0] = in_ns; fl->rules[33].inp_fuzzy_set[1] = in_ps; //If theta is NS and theta_dot is ZE, then output is ZE
+    fl->rules[34].inp_fuzzy_set[0] = in_ns; fl->rules[34].inp_fuzzy_set[1] = in_pl; //If theta is NS and theta_dot is ZE, then output is NS
+
+    //Rules covering ZE
+    fl->rules[35].inp_fuzzy_set[0] = in_ze; fl->rules[35].inp_fuzzy_set[1] = in_ze; //If theta is ZE and theta_dot is ZE, then output is ZE
+    fl->rules[36].inp_fuzzy_set[0] = in_ze; fl->rules[36].inp_fuzzy_set[1] = in_nl; //If theta is ZE and theta_dot is NS, then output is PS
+    fl->rules[37].inp_fuzzy_set[0] = in_ze; fl->rules[37].inp_fuzzy_set[1] = in_ns; //If theta is ZE and theta_dot is NL, then output is PL
+    fl->rules[38].inp_fuzzy_set[0] = in_ze; fl->rules[38].inp_fuzzy_set[1] = in_ps; //If theta is ZE and theta_dot is PS, then output is NS
+    fl->rules[39].inp_fuzzy_set[0] = in_ze; fl->rules[39].inp_fuzzy_set[1] = in_pl; //If theta is ZE and theta_dot is PL, then output is NL
+
+    //Rules covering PS
+    fl->rules[40].inp_fuzzy_set[0] = in_ps; fl->rules[40].inp_fuzzy_set[1] = in_ps; //If theta is PS and theta_dot is PS, then output is NL
+    fl->rules[41].inp_fuzzy_set[0] = in_ps; fl->rules[41].inp_fuzzy_set[1] = in_nl; //If theta is PS and theta_dot is NL, then output is PS
+    fl->rules[42].inp_fuzzy_set[0] = in_ps; fl->rules[42].inp_fuzzy_set[1] = in_ns; //If theta is PS and theta_dot is NS, then output is ZE
+    fl->rules[43].inp_fuzzy_set[0] = in_ps; fl->rules[43].inp_fuzzy_set[1] = in_ze; //If theta is PS and theta_dot is ZE, then output is NS
+    fl->rules[44].inp_fuzzy_set[0] = in_ps; fl->rules[44].inp_fuzzy_set[1] = in_pl; //If theta is PS and theta_dot is PL, then output is NVL
+
+    //Rules covering PL
+    fl->rules[45].inp_fuzzy_set[0] = in_pl; fl->rules[45].inp_fuzzy_set[1] = in_pl; //If theta is PL and theta_dot is PL, then output is NVL
+    fl->rules[46].inp_fuzzy_set[0] = in_pl; fl->rules[46].inp_fuzzy_set[1] = in_nl; //If theta is PL and theta_dot is NL, then output is ZE
+    fl->rules[47].inp_fuzzy_set[0] = in_pl; fl->rules[47].inp_fuzzy_set[1] = in_ns; //If theta is PL and theta_dot is NS, then output is NVL
+    fl->rules[48].inp_fuzzy_set[0] = in_pl; fl->rules[48].inp_fuzzy_set[1] = in_ze; //If theta is PL and theta_dot is NL, then output is NL
+    fl->rules[49].inp_fuzzy_set[0] = in_pl; fl->rules[49].inp_fuzzy_set[1] = in_ps; //If theta is PL and theta_dot is ZE, then output is NL
 
       return;
 }
 
 
-void initMembershipFunctions(fuzzy_system_rec *fl) {
+void initMembershipFunctions(fuzzy_system_rec *fl) 
+{
 	
    /* The X membership functions */
    //Defined for the combined input x that represents the angle and angular velocity.
    //Each membership function is defined as a trapezoid with four points (a,b,c,d, and type)
+   
+    // For each input variable (x, x_dot, theta, theta_dot)
+   for (int var = 0; var < 4; var++) {
+        fl->inp_mem_fns[var][in_nl] = init_trapz(-4, -4, 3, 2, left_trapezoid);
+        fl->inp_mem_fns[var][in_ns] = init_trapz(-1.5, -1, -1, -0.5, regular_trapezoid);
+        fl->inp_mem_fns[var][in_ze] = init_trapz(-0.75, -0.25, 0.25, 0.75, regular_trapezoid);
+        fl->inp_mem_fns[var][in_ps] = init_trapz(0.5, 1, 1, 1.5, regular_trapezoid);
+        fl->inp_mem_fns[var][in_pl] = init_trapz(2, 3, 4, 4, right_trapezoid);
+    }
+   
 
-    fl->inp_mem_fns[in_x][in_nvl] = init_trapz(-4, -4, -3, -2, left_trapezoid);    // Negative Very Large
-    fl->inp_mem_fns[in_x][in_nl] = init_trapz(-3, -2, -2, -1, regular_trapezoid);  // Negative Large
-    fl->inp_mem_fns[in_x][in_nm] = init_trapz(-2, -1, -1, -0.5, regular_trapezoid); // Negative Medium
-    fl->inp_mem_fns[in_x][in_ns] = init_trapz(-1, -0.5, -0.5, 0, regular_trapezoid); // Negative Small
-    fl->inp_mem_fns[in_x][in_ze] = init_trapz(-0.5, 0, 0, 0.5, regular_trapezoid);  // Zero
-    fl->inp_mem_fns[in_x][in_ps] = init_trapz(0, 0.5, 0.5, 1, regular_trapezoid);   // Positive Small
-    fl->inp_mem_fns[in_x][in_pm] = init_trapz(0.5, 1, 1, 2, regular_trapezoid);     // Positive Medium
-    fl->inp_mem_fns[in_x][in_pl] = init_trapz(1, 2, 2, 3, regular_trapezoid);       // Positive Large
-    fl->inp_mem_fns[in_x][in_pvl] = init_trapz(2, 3, 4, 4, right_trapezoid);        // Positive Very Large
-
-
-   //Sample routines only, to give you an idea of what to do here
-  	// fl->inp_mem_fns[in_x][in_neg] = init_trapz (0,0,-1.5,-0.5,left_trapezoid);
-   //~ fl->inp_mem_fns[in_x][in_ze] = init_trapz (-1.5,-0.5,0.5,1.5,regular_trapezoid);
-   //~ fl->inp_mem_fns[in_x][in_pos] = init_trapz (0.5,1.5,0,0,right_trapezoid);
-	
-   /* The X dot membership functions */
-   //enter the appropriate membership function initialisations here 
-
-   /* The theta membership functions */
-   //enter the appropriate membership function initialisations here
-  	
-   /* The theta dot membership functions */
-   //enter the appropriate membership function initialisations here
-  	
-
-	
 	
    return;
 }
@@ -108,17 +155,15 @@ void initMembershipFunctions(fuzzy_system_rec *fl) {
 void initFuzzySystem (fuzzy_system_rec *fl) {
 
    //Note: The settings of these parameters will depend upon your fuzzy system design
-   fl->no_of_inputs = 1;  /* Combined input X */
-   fl->no_of_rules = 13; //Reduced rules for simplicity and following Yamakawas approach
-   fl->no_of_inp_regions = 9; //Number of input fuzzy sets
+   fl->no_of_inputs = 2;  /* Combined input X */
+   fl->no_of_rules = 50; //Reduced rules for simplicity and following Yamakawas approach
+   fl->no_of_inp_regions = 5; //Number of input fuzzy sets
    fl->no_of_outputs = 9; //Number of output sets
 	
    coefficient_A=1.0; //Angle coefficient
    coefficient_B=1.0; //Angular Velocit coefficient
-
-   //removed for simplicity
-   // coefficient_C=1.0;
-   // coefficient_D=1.0;
+   coefficient_C=1.0;
+   coefficient_D=1.0;
 	
 	//Sample only
 	// fl->output_values [out_nvl]=-95.0;
@@ -126,15 +171,15 @@ void initFuzzySystem (fuzzy_system_rec *fl) {
    
    //Define the crisp output values for each set
 
-   fl->output_values [out_nvl] = -100.0; //Negative Very Large
-   fl->output_values [out_nl] = -75.0; //Negative Large
-   fl->output_values [out_nm] = -50.0; //Negative Medium
-   fl->output_values [out_ns] = -25.0; //Negative Small
+   fl->output_values [out_nvl] = -1000; //Negative Very Large
+   fl->output_values [out_nl] = -500; //Negative Large
+   fl->output_values [out_nm] = -125; //Negative Medium
+   fl->output_values [out_ns] = -25; //Negative Small
    fl->output_values [out_ze] = 0.0; //Zero
-   fl->output_values [out_ps] = 25.0; //Positive Small
-   fl->output_values [out_pm] = 50.0; //Positive Medium
-   fl->output_values [out_pl] = 75.0; //Positive Large
-   fl->output_values [out_pvl] = 100.0; //Positive Very Large
+   fl->output_values [out_ps] = 25; //Positive Small
+   fl->output_values [out_pm] = 125; //Positive Medium
+   fl->output_values [out_pl] = 500; //Positive Large
+   fl->output_values [out_pvl] = 1000; //Positive Very Large
 
 //Memory alloc for the rules
    fl->rules = (rule *) malloc ((size_t)(fl->no_of_rules*sizeof(rule)));
@@ -234,7 +279,7 @@ float fuzzy_system (float inputs[],fuzzy_system_rec fz) {
    int i,j;
    short variable_index,fuzzy_set;
    float sum1 = 0.0,sum2 = 0.0,weight;
-   float m_values[MAX_NO_OF_INPUTS];
+   float m_values[MAX_NO_OF_INPUTS] = {0.0};
 	
    
    for (i = 0;i < fz.no_of_rules;i++) {
@@ -243,19 +288,27 @@ float fuzzy_system (float inputs[],fuzzy_system_rec fz) {
 	   fuzzy_set = fz.rules[i].inp_fuzzy_set[j];
 	   m_values[j] = trapz(inputs[variable_index],
 	       fz.inp_mem_fns[variable_index][fuzzy_set]);
+
+          // Debug print
+            cout << "Rule " << i << ", Input " << j << ": " << m_values[j] << endl;
+
 	   } /* end j  */
+      
       
        weight = min_of (m_values,fz.no_of_inputs);
 				
        sum1 += weight * fz.output_values[fz.rules[i].out_fuzzy_set];
        sum2 += weight;
+
+        // Debug print
+        cout << "Rule " << i << " weight: " << weight << endl;
    } /* end i  */
  
 	
 	if (fabs(sum2) < TOO_SMALL) {
       cout << "\r\nFLPRCS Error: Sum2 in fuzzy_system is 0.  Press key: " << endl;
-      //~ getch();
-      //~ exit(1);
+      //getch();
+      exit(1);
       return 0.0;
    }
    

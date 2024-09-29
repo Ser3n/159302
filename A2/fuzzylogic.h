@@ -17,8 +17,8 @@ using namespace std;
 
 /////////////////////////////////////////////////////
 
-#define MAX_NO_OF_INPUTS 1 //Changed for simplified version
-#define MAX_NO_OF_INP_REGIONS 9 //Increased fuzzy sets
+#define MAX_NO_OF_INPUTS 5 
+#define MAX_NO_OF_INP_REGIONS 5 
 #define MAX_NO_OF_OUTPUT_VALUES 9
 
 #define TOO_SMALL 1e-6
@@ -27,16 +27,14 @@ using namespace std;
 typedef enum {regular_trapezoid, left_trapezoid, right_trapezoid} trapz_type;
 
 //Input parameters
-// enum {INPUT_X, INPUT_Y};
-
-enum {INPUT_X};//Simplified to one input
-enum {in_theta,in_theta_dot,in_x,in_x_dot};
+enum {INPUT_X, INPUT_Y};
+enum { in_theta,in_theta_dot,in_x,in_x_dot};
 
 //Fuzzy sets
-enum {in_nvl,in_nvm, in_nl,in_nm,in_ns, in_nvs, in_ze,in_ps,in_pm, in_pl, in_pvl, in_pvm, in_pvs};
+enum { in_nl, in_ns, in_ze, in_ps, in_pl};
 
 //Fuzzy output terms
-enum {out_nvl,out_nl,out_nm, out_ns,out_nvm,out_nvs, out_ze,out_ps, out_pm,out_pl, out_pvl, out_pvm, out_pvs};
+enum {out_nvl, out_nl, out_nm, out_ns, out_ze, out_ps, out_pm, out_pl, out_pvl};
 
 
 typedef struct {
@@ -60,7 +58,7 @@ typedef struct {
 } fuzzy_system_rec;
 
 extern fuzzy_system_rec g_fuzzy_system;
-extern float coefficient_A, coefficient_B; //coefficient_C, coefficient_D; Removed for simplified version
+extern float coefficient_A, coefficient_B, coefficient_C, coefficient_D;
 
 //---------------------------------------------------------------------------
 

@@ -427,11 +427,12 @@ void runInvertedPendulum(){
 			     //retrieve inputs
 
 				 inputs[INPUT_X] = (coefficient_A * prevState.angle) + (coefficient_B * prevState.angle_dot);
-				 inputs[INPUT_Y] = (coefficient_C * prevState.x) + (coefficient_D * prevState.x_dot);
+				 
+				inputs[INPUT_Y] = (coefficient_C * prevState.x) + (coefficient_D * prevState.x_dot);
 				
 		         //1) Enable this only after your fuzzy system has been completed already.
 		         //Remember, you need to define the rules, membership function parameters and rule outputs.
-		         //prevState.F = fuzzy_system(inputs, g_fuzzy_system); //call the fuzzy controller
+		         prevState.F = fuzzy_system(inputs, g_fuzzy_system); //call the fuzzy controller
 				 
 				 externalForce=0.0;
 
@@ -520,7 +521,7 @@ void runInvertedPendulum(){
 				    string timeStr = to_string(elapsed_seconds.count()); 
 				    timeStr = timeStr + " sec.";
 					
-					// cout << "timeElapsed = " << elapsed_seconds.count() << endl;
+					 cout << "timeElapsed = " << elapsed_seconds.count() << endl;
 					if(stabilized){
 					   displayInfo(newState, "well-balanced", timeStr); 
 					} else {
@@ -542,7 +543,7 @@ void runInvertedPendulum(){
 
 		         
 		      #if defined __WIN32__
-		         // getch();
+		          //getch();
 		         if(mousedown()){
 		         	//do nothing
 		         }
@@ -628,6 +629,7 @@ void generateControlSurface_Angle_vs_Angle_Dot(){
 
 
 			 inputs[INPUT_X] = (coefficient_A * prevState.angle) + (coefficient_B * prevState.angle_dot);
+			 
 			 inputs[INPUT_Y] = (coefficient_C * prevState.x) + (coefficient_D * prevState.x_dot);
 			
 	         prevState.F = 0.0;  //nothing is done.//fuzzy_system(inputs, g_fuzzy_system);
@@ -764,10 +766,10 @@ int main(void) {
 		runInvertedPendulum();
 	
 		//3) Enable this only after your fuzzy system has been completed already.
-		//generateControlSurface_Angle_vs_Angle_Dot();
+		generateControlSurface_Angle_vs_Angle_Dot();
 		
 		//4) Enable this only after your fuzzy system has been completed already.
-		//saveDataToFile("data_angle_vs_angle_dot.txt");
+		saveDataToFile("data_angle_vs_angle_dot.txt");
 		
    }
    catch(...){
